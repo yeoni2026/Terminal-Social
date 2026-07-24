@@ -1,4 +1,4 @@
-from user.py import User
+from user import User
 
 user = User()
 
