@@ -1,16 +1,12 @@
 from pathlib import Path
 import json
 import uuid
-try:
-    import readline
-except ImportError:
-    import pyreadline3 as readline
+from prompt_toolkit import prompt
 BASE_DIR=Path(__file__).resolve().parent
 DATA_DIR=BASE_DIR / "Data"
 #이 함수는 cli 환경에서 메모를 수정가능하게 만들기 위해서 필요: input에서 플레이어가 입력하기 전에 특정 문자열을 밀어넣는다.
 def bring_text(string):
     readline.insert_text(string)
-    readline.redisplay()
 # 이 함수는 메모를 작성할때 작성 유저마다 다른 메모 공간을 사용하고 유저들을 구분할 수 있기 위해 유저라는 클래스를 만들고 그 프로퍼티와 메서드를 넣었다.
 class User :
     def __init__(self):
@@ -52,11 +48,6 @@ class User :
                 return
             print(f"--{all_Data[id][memo_id]["title"]}--")
             original_text=all_Data[id][memo_id]["content"]
-            setup_text=lambda : bring_text(original_text) # 이 함수로 setup_text변수에 실행하면 input 받을때 bring_text(내용물) 이 내용물을 미리 입력된 값으로 설정하여, 텍스트 원본을 수정하는 듯 한 느낌주기 가능
-            readline.set_startup_hook(setup_text) # 이 함수로 위에서 설정한 함수를 input 전에 실행하기 전에 실행하라고 예약 걸어둠
-            try:
-                input_text=input("content:")
-            finally:
-                readline.set_startup_hook(None) # 이거로 예약 풀기
+            input_text=prompt("content: ", default=original_text)
             all_Data[id][memo_id]["content"]=input_text
             self.save_memo(all_Data)
